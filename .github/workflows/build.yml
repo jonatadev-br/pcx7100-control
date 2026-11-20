@@ -36,16 +36,12 @@ jobs:
         run: |
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          cache-disabled: true
-          gradle-version: 8.5
-
       - name: Build Debug APK
-        run: gradle assembleDebug --no-daemon --stacktrace
-        env:
-          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2048m"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: assembleDebug --no-daemon --stacktrace
+          gradle-version: 8.5
+          cache-disabled: true
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
