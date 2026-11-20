@@ -266,7 +266,8 @@ public class BluetoothConnectionService extends Service {
 
         // Connection timeout
         handler.postDelayed(() -> {
-            if (bluetoothGatt != null && bluetoothGatt.getConnectionState() != BluetoothProfile.STATE_CONNECTED) {
+            if (bluetoothGatt != null && connectedDevice != null
+                    && bluetoothManager.getConnectionState(connectedDevice, BluetoothProfile.GATT) != BluetoothProfile.STATE_CONNECTED) {
                 bluetoothGatt.close();
                 bluetoothGatt = null;
                 if (connectionCallback != null) {
@@ -384,17 +385,18 @@ public class BluetoothConnectionService extends Service {
             }
         }
 
-        private void writeCharacteristic(UUID charUuid, byte[] data) {
-            if (bluetoothGatt == null) return;
-            BluetoothGattService service = bluetoothGatt.getService(SERVICE_UUID);
-            if (service == null) return;
-            BluetoothGattCharacteristic characteristic = service.getCharacteristic(charUuid);
-            if (characteristic != null) {
-                characteristic.setValue(data);
-                bluetoothGatt.writeCharacteristic(characteristic);
-            }
-        }
     };
+
+    private void writeCharacteristic(UUID charUuid, byte[] data) {
+        if (bluetoothGatt == null) return;
+        BluetoothGattService service = bluetoothGatt.getService(SERVICE_UUID);
+        if (service == null) return;
+        BluetoothGattCharacteristic characteristic = service.getCharacteristic(charUuid);
+        if (characteristic != null) {
+            characteristic.setValue(data);
+            bluetoothGatt.writeCharacteristic(characteristic);
+        }
+    }
 
     public void setVolume(int volume) {
         writeCharacteristic(VOLUME_CHAR_UUID, new byte[]{(byte) volume});

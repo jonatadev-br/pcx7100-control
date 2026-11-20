@@ -20,13 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
@@ -36,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LifecycleObserver {
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = "PCX7100_MainActivity";
     private static final int REQ_PERMISSIONS = 1001;
     private static final int REQ_ENABLE_BT = 1002;
@@ -92,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getLifecycle().addObserver(this);
         setContentView(R.layout.activity_main);
 
         initViews();
@@ -465,10 +462,5 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
     protected void onDestroy() {
         uiHandler.removeCallbacks(eqAnimationRunnable);
         super.onDestroy();
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    void onAppBackgrounded() {
-        // Service keeps Bluetooth alive
     }
 }

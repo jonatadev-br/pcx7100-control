@@ -18,6 +18,7 @@
     <string name="media_pause">Pause</string>
     <string name="media_prev">Anterior</string>
     <string name="media_next">Próximo</string>
+    <string name="media_title">Capa do álbum</string>
     <string name="nav_control">Control</string>
     <string name="nav_eq">EQ</string>
     <string name="nav_media">Mídia</string>

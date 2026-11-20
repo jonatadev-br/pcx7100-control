@@ -22,26 +22,22 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK (use pre-installed)
-        run: |
-          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
-          ls -la $ANDROID_HOME
-
       - name: Accept Android SDK licenses
         run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Install required SDK packages
         run: |
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Build Debug APK
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: assembleDebug --no-daemon --stacktrace --info
-          gradle-version: 8.5
-          cache-disabled: true
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
           ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
@@ -59,14 +55,14 @@ jobs:
           tag_name: v${{ github.run_number }}
           name: PCX7100 Control v${{ github.run_number }}
           body: |
-            Build automático #${{ github.run_number }}
-            
+            Build automatico #${{ github.run_number }}
+
             **Funcionalidades:**
             - Controle de volume (slider)
-            - Play/Pause/Próximo/Anterior
+            - Play/Pause/Proximo/Anterior
             - Equalizador 7 bandas animado
             - 5 Presets: Flat, Bass, Pop, Rock, Jazz
-            - Conexão Bluetooth com PCX7100
+            - Conexao Bluetooth com PCX7100
             - Indicador de bateria
             - Controle de luzes LED
             - Tema Dark Neon (ciano #00FFC8)
