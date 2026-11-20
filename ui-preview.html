@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>PCX7100 Control — Design Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Space Grotesk', sans-serif; background: #0A0A0F; color: #E8E8EC; min-height: 100vh; padding: 24px 16px 40px; }
+h1 { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 8px; letter-spacing: -0.02em; }
+.subtitle { text-align: center; color: #7A7A8A; font-size: 13px; margin-bottom: 32px; font-weight: 400; }
+.phone-frame { width: 390px; height: 844px; margin: 0 auto 32px; border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 40px 80px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05); background: #000; }
+.phone-frame::before { content: ''; position: absolute; top: 16px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: #1A1A24; z-index: 10; }
+.phone-frame::after { content: ''; position: absolute; top: 28px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; border-radius: 50%; background: #1A1A24; z-index: 10; }
+.screen { width: 100%; height: 100%; overflow-y: auto; position: relative; }
+.design-label { position: absolute; top: 60px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 5; pointer-events: none; }
+.design-label .num { background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+.design-label .mood { background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 500; color: #aaa; border: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* ========== DESIGN 1: DARK NEON ========== */
+.design-1 .screen { background: linear-gradient(180deg, #0A0A0F 0%, #0D0D14 100%); }
+.design-1 .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 12px; position: sticky; top: 0; background: linear-gradient(180deg, rgba(10,10,15,0.95) 0%, transparent 100%); z-index: 10; backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,255,200,0.08); }
+.design-1 .device-name { font-size: 17px; font-weight: 600; color: #00FFC8; letter-spacing: -0.01em; }
+.design-1 .device-status { font-size: 11px; font-weight: 500; color: #00FFC8; background: rgba(0,255,200,0.12); padding: 4px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+.design-1 .battery { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #00FFC8; font-family: 'JetBrains Mono', monospace; }
+.design-1 .battery-icon { width: 28px; height: 14px; border: 2px solid #00FFC8; border-radius: 3px; position: relative; }
+.design-1 .battery-icon::after { content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%); width: 4px; height: 6px; background: #00FFC8; border-radius: 0 1px 1px 0; }
+.design-1 .battery-fill { position: absolute; left: 2px; top: 2px; bottom: 2px; width: 70%; background: #00FFC8; border-radius: 1px; }
+.design-1 .volume-section { padding: 16px 20px 8px; }
+.design-1 .section-title { font-size: 11px; font-weight: 700; color: #00FFC8; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px; opacity: 0.7; }
+.design-1 .volume-slider-wrap { position: relative; height: 56px; }
+.design-1 .volume-track { position: absolute; top: 50%; left: 0; right: 0; height: 6px; background: rgba(0,255,200,0.12); border-radius: 3px; transform: translateY(-50%); }
+.design-1 .volume-fill { position: absolute; top: 0; left: 0; height: 100%; width: 68%; background: linear-gradient(90deg, #00FFC8 0%, #00D4AA 100%); border-radius: 3px; box-shadow: 0 0 16px rgba(0,255,200,0.5); }
+.design-1 .volume-thumb { position: absolute; top: 50%; left: 68%; transform: translate(-50%, -50%); width: 28px; height: 28px; background: #00FFC8; border-radius: 50%; box-shadow: 0 4px 16px rgba(0,255,200,0.5), 0 0 0 4px rgba(0,255,200,0.15); cursor: pointer; }
+.design-1 .volume-labels { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; color: #5A5A6A; font-weight: 500; }
+.design-1 .media-section { padding: 24px 20px 16px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.design-1 .media-artwork { width: 180px; height: 180px; border-radius: 20px; background: linear-gradient(135deg, #0D0D14 0%, #1A1A24 100%); border: 1px solid rgba(0,255,200,0.15); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.design-1 .media-artwork::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, rgba(0,255,200,0.08) 0%, transparent 60%); }
+.design-1 .media-artwork svg { width: 72px; height: 72px; stroke: #00FFC8; opacity: 0.6; }
+.design-1 .media-info { text-align: center; width: 100%; }
+.design-1 .media-title { font-size: 18px; font-weight: 600; color: #E8E8EC; margin-bottom: 4px; }
+.design-1 .media-artist { font-size: 13px; color: #00FFC8; font-weight: 500; }
+.design-1 .media-controls { display: flex; align-items: center; gap: 28px; }
+.design-1 .media-btn { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(0,255,200,0.08); border: 1px solid rgba(0,255,200,0.15); color: #00FFC8; cursor: pointer; transition: all 0.2s ease; }
+.design-1 .media-btn.play { width: 72px; height: 72px; background: linear-gradient(135deg, #00FFC8 0%, #00D4AA 100%); color: #0A0A0F; border: none; box-shadow: 0 8px 32px rgba(0,255,200,0.4); }
+.design-1 .media-btn svg { width: 24px; height: 24px; }
+.design-1 .media-btn.play svg { width: 28px; height: 28px; }
+.design-1 .eq-section { padding: 16px 20px 8px; }
+.design-1 .eq-bars { display: flex; align-items: flex-end; justify-content: center; gap: 8px; height: 80px; padding: 0 20px; }
+.design-1 .eq-bar { width: 16px; background: linear-gradient(180deg, #00FFC8 0%, #00D4AA 50%, #008866 100%); border-radius: 8px 8px 0 0; box-shadow: 0 0 12px rgba(0,255,200,0.4); transition: height 0.1s ease; }
+.design-1 .eq-labels { display: flex; justify-content: space-between; padding: 8px 20px 0; font-size: 10px; color: #5A5A6A; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.design-1 .preset-row { display: flex; gap: 10px; justify-content: center; padding: 16px 20px; flex-wrap: wrap; }
+.design-1 .preset-btn { padding: 8px 18px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; border: 1px solid rgba(0,255,200,0.2); background: rgba(0,255,200,0.05); color: #00FFC8; cursor: pointer; transition: all 0.2s; }
+.design-1 .preset-btn.active { background: linear-gradient(135deg, #00FFC8 0%, #00D4AA 100%); color: #0A0A0F; border-color: transparent; box-shadow: 0 4px 16px rgba(0,255,200,0.3); }
+.design-1 .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; padding: 12px 0 16px; background: linear-gradient(0deg, rgba(10,10,15,0.98) 0%, transparent 100%); backdrop-filter: blur(20px); border-top: 1px solid rgba(0,255,200,0.08); z-index: 20; }
+.design-1 .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #5A5A6A; font-size: 10px; font-weight: 500; cursor: pointer; padding: 0 12px; }
+.design-1 .nav-item.active { color: #00FFC8; }
+.design-1 .nav-item svg { width: 24px; height: 24px; stroke: currentColor; }
+
+/* ========== DESIGN 2: WARM AUDIO ========== */
+.design-2 .screen { background: linear-gradient(180deg, #1A1410 0%, #14100D 100%); }
+.design-2 .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 12px; position: sticky; top: 0; background: linear-gradient(180deg, rgba(26,20,16,0.95) 0%, transparent 100%); z-index: 10; backdrop-filter: blur(20px); border-bottom: 1px solid rgba(212,165,85,0.1); }
+.design-2 .device-name { font-size: 17px; font-weight: 600; color: #D4A555; letter-spacing: -0.01em; }
+.design-2 .device-status { font-size: 11px; font-weight: 500; color: #D4A555; background: rgba(212,165,85,0.12); padding: 4px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+.design-2 .battery { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #D4A555; font-family: 'JetBrains Mono', monospace; }
+.design-2 .battery-icon { width: 28px; height: 14px; border: 2px solid #D4A555; border-radius: 3px; position: relative; }
+.design-2 .battery-icon::after { content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%); width: 4px; height: 6px; background: #D4A555; border-radius: 0 1px 1px 0; }
+.design-2 .battery-fill { position: absolute; left: 2px; top: 2px; bottom: 2px; width: 70%; background: #D4A555; border-radius: 1px; }
+.design-2 .volume-section { padding: 16px 20px 8px; }
+.design-2 .section-title { font-size: 11px; font-weight: 700; color: #D4A555; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px; opacity: 0.7; }
+.design-2 .volume-slider-wrap { position: relative; height: 56px; }
+.design-2 .volume-track { position: absolute; top: 50%; left: 0; right: 0; height: 6px; background: rgba(212,165,85,0.12); border-radius: 3px; transform: translateY(-50%); }
+.design-2 .volume-fill { position: absolute; top: 0; left: 0; height: 100%; width: 68%; background: linear-gradient(90deg, #D4A555 0%, #C49444 100%); border-radius: 3px; box-shadow: 0 0 16px rgba(212,165,85,0.4); }
+.design-2 .volume-thumb { position: absolute; top: 50%; left: 68%; transform: translate(-50%, -50%); width: 28px; height: 28px; background: #D4A555; border-radius: 50%; box-shadow: 0 4px 16px rgba(212,165,85,0.4), 0 0 0 4px rgba(212,165,85,0.15); cursor: pointer; }
+.design-2 .volume-labels { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; color: #6A5A4A; font-weight: 500; }
+.design-2 .media-section { padding: 24px 20px 16px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.design-2 .media-artwork { width: 180px; height: 180px; border-radius: 16px; background: linear-gradient(135deg, #1A1410 0%, #241A12 100%); border: 1px solid rgba(212,165,85,0.15); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.design-2 .media-artwork::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, rgba(212,165,85,0.08) 0%, transparent 60%); }
+.design-2 .media-artwork svg { width: 72px; height: 72px; stroke: #D4A555; opacity: 0.6; }
+.design-2 .media-info { text-align: center; width: 100%; }
+.design-2 .media-title { font-size: 18px; font-weight: 600; color: #E8E8EC; margin-bottom: 4px; }
+.design-2 .media-artist { font-size: 13px; color: #D4A555; font-weight: 500; }
+.design-2 .media-controls { display: flex; align-items: center; gap: 28px; }
+.design-2 .media-btn { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(212,165,85,0.08); border: 1px solid rgba(212,165,85,0.15); color: #D4A555; cursor: pointer; transition: all 0.2s ease; }
+.design-2 .media-btn.play { width: 72px; height: 72px; background: linear-gradient(135deg, #D4A555 0%, #C49444 100%); color: #1A1410; border: none; box-shadow: 0 8px 32px rgba(212,165,85,0.4); }
+.design-2 .media-btn svg { width: 24px; height: 24px; }
+.design-2 .media-btn.play svg { width: 28px; height: 28px; }
+.design-2 .eq-section { padding: 16px 20px 8px; }
+.design-2 .eq-bars { display: flex; align-items: flex-end; justify-content: center; gap: 8px; height: 80px; padding: 0 20px; }
+.design-2 .eq-bar { width: 16px; background: linear-gradient(180deg, #D4A555 0%, #C49444 50%, #A07838 100%); border-radius: 8px 8px 0 0; box-shadow: 0 0 12px rgba(212,165,85,0.4); transition: height 0.1s ease; }
+.design-2 .eq-labels { display: flex; justify-content: space-between; padding: 8px 20px 0; font-size: 10px; color: #6A5A4A; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.design-2 .preset-row { display: flex; gap: 10px; justify-content: center; padding: 16px 20px; flex-wrap: wrap; }
+.design-2 .preset-btn { padding: 8px 18px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; border: 1px solid rgba(212,165,85,0.2); background: rgba(212,165,85,0.05); color: #D4A555; cursor: pointer; transition: all 0.2s; }
+.design-2 .preset-btn.active { background: linear-gradient(135deg, #D4A555 0%, #C49444 100%); color: #1A1410; border-color: transparent; box-shadow: 0 4px 16px rgba(212,165,85,0.3); }
+.design-2 .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; padding: 12px 0 16px; background: linear-gradient(0deg, rgba(26,20,16,0.98) 0%, transparent 100%); backdrop-filter: blur(20px); border-top: 1px solid rgba(212,165,85,0.08); z-index: 20; }
+.design-2 .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #6A5A4A; font-size: 10px; font-weight: 500; cursor: pointer; padding: 0 12px; }
+.design-2 .nav-item.active { color: #D4A555; }
+.design-2 .nav-item svg { width: 24px; height: 24px; stroke: currentColor; }
+
+/* ========== DESIGN 3: MINIMAL PRO ========== */
+.design-3 .screen { background: #F6F7F9; color: #1A1A1A; }
+.design-3 .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 12px; position: sticky; top: 0; background: linear-gradient(180deg, rgba(246,247,249,0.95) 0%, transparent 100%); z-index: 10; backdrop-filter: blur(20px); border-bottom: 1px solid #EFEFF0; }
+.design-3 .device-name { font-size: 17px; font-weight: 600; color: #1A1A1A; letter-spacing: -0.01em; }
+.design-3 .device-status { font-size: 11px; font-weight: 500; color: #4F46E5; background: #EEF0FF; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+.design-3 .battery { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #4F46E5; font-family: 'JetBrains Mono', monospace; }
+.design-3 .battery-icon { width: 28px; height: 14px; border: 2px solid #4F46E5; border-radius: 3px; position: relative; }
+.design-3 .battery-icon::after { content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%); width: 4px; height: 6px; background: #4F46E5; border-radius: 0 1px 1px 0; }
+.design-3 .battery-fill { position: absolute; left: 2px; top: 2px; bottom: 2px; width: 70%; background: #4F46E5; border-radius: 1px; }
+.design-3 .volume-section { padding: 16px 20px 8px; }
+.design-3 .section-title { font-size: 11px; font-weight: 700; color: #4F46E5; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px; opacity: 0.6; }
+.design-3 .volume-slider-wrap { position: relative; height: 56px; }
+.design-3 .volume-track { position: absolute; top: 50%; left: 0; right: 0; height: 6px; background: #EFEFF0; border-radius: 3px; transform: translateY(-50%); }
+.design-3 .volume-fill { position: absolute; top: 0; left: 0; height: 100%; width: 68%; background: #4F46E5; border-radius: 3px; }
+.design-3 .volume-thumb { position: absolute; top: 50%; left: 68%; transform: translate(-50%, -50%); width: 28px; height: 28px; background: #fff; border: 3px solid #4F46E5; border-radius: 50%; box-shadow: 0 4px 16px rgba(79,70,229,0.2); cursor: pointer; }
+.design-3 .volume-labels { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; color: #8A8A8E; font-weight: 500; }
+.design-3 .media-section { padding: 24px 20px 16px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.design-3 .media-artwork { width: 180px; height: 180px; border-radius: 16px; background: #fff; border: 1px solid #EFEFF0; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+.design-3 .media-artwork svg { width: 72px; height: 72px; stroke: #4F46E5; opacity: 0.5; }
+.design-3 .media-info { text-align: center; width: 100%; }
+.design-3 .media-title { font-size: 18px; font-weight: 600; color: #1A1A1A; margin-bottom: 4px; }
+.design-3 .media-artist { font-size: 13px; color: #4F46E5; font-weight: 500; }
+.design-3 .media-controls { display: flex; align-items: center; gap: 28px; }
+.design-3 .media-btn { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #EFEFF0; color: #4F46E5; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.design-3 .media-btn.play { width: 72px; height: 72px; background: #4F46E5; color: #fff; border: none; box-shadow: 0 8px 24px rgba(79,70,229,0.3); }
+.design-3 .media-btn svg { width: 24px; height: 24px; }
+.design-3 .media-btn.play svg { width: 28px; height: 28px; }
+.design-3 .eq-section { padding: 16px 20px 8px; }
+.design-3 .eq-bars { display: flex; align-items: flex-end; justify-content: center; gap: 8px; height: 80px; padding: 0 20px; }
+.design-3 .eq-bar { width: 16px; background: #4F46E5; border-radius: 8px 8px 0 0; transition: height 0.1s ease; }
+.design-3 .eq-labels { display: flex; justify-content: space-between; padding: 8px 20px 0; font-size: 10px; color: #8A8A8E; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.design-3 .preset-row { display: flex; gap: 10px; justify-content: center; padding: 16px 20px; flex-wrap: wrap; }
+.design-3 .preset-btn { padding: 8px 18px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; border: 1px solid #EFEFF0; background: #fff; color: #4F46E5; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.design-3 .preset-btn.active { background: #4F46E5; color: #fff; border-color: #4F46E5; box-shadow: 0 4px 16px rgba(79,70,229,0.2); }
+.design-3 .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; padding: 12px 0 16px; background: linear-gradient(0deg, rgba(246,247,249,0.98) 0%, transparent 100%); backdrop-filter: blur(20px); border-top: 1px solid #EFEFF0; z-index: 20; }
+.design-3 .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #8A8A8E; font-size: 10px; font-weight: 500; cursor: pointer; padding: 0 12px; }
+.design-3 .nav-item.active { color: #4F46E5; }
+.design-3 .nav-item svg { width: 24px; height: 24px; stroke: currentColor; }
+
+/* Animations */
+@keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+.eq-bar { animation: pulse 1.2s ease-in-out infinite; }
+.eq-bar:nth-child(2) { animation-delay: 0.1s; }
+.eq-bar:nth-child(3) { animation-delay: 0.2s; }
+.eq-bar:nth-child(4) { animation-delay: 0.3s; }
+.eq-bar:nth-child(5) { animation-delay: 0.4s; }
+.eq-bar:nth-child(6) { animation-delay: 0.5s; }
+.eq-bar:nth-child(7) { animation-delay: 0.6s; }
+
+.design-1 .eq-bar { height: 35%; }
+.design-1 .eq-bar:nth-child(2) { height: 55%; }
+.design-1 .eq-bar:nth-child(3) { height: 75%; }
+.design-1 .eq-bar:nth-child(4) { height: 45%; }
+.design-1 .eq-bar:nth-child(5) { height: 65%; }
+.design-1 .eq-bar:nth-child(6) { height: 30%; }
+.design-1 .eq-bar:nth-child(7) { height: 50%; }
+
+.design-2 .eq-bar { height: 40%; }
+.design-2 .eq-bar:nth-child(2) { height: 60%; }
+.design-2 .eq-bar:nth-child(3) { height: 80%; }
+.design-2 .eq-bar:nth-child(4) { height: 50%; }
+.design-2 .eq-bar:nth-child(5) { height: 70%; }
+.design-2 .eq-bar:nth-child(6) { height: 35%; }
+.design-2 .eq-bar:nth-child(7) { height: 55%; }
+
+.design-3 .eq-bar { height: 30%; }
+.design-3 .eq-bar:nth-child(2) { height: 50%; }
+.design-3 .eq-bar:nth-child(3) { height: 70%; }
+.design-3 .eq-bar:nth-child(4) { height: 40%; }
+.design-3 .eq-bar:nth-child(5) { height: 60%; }
+.design-3 .eq-bar:nth-child(6) { height: 25%; }
+.design-3 .eq-bar:nth-child(7) { height: 45%; }
+
+/* Picker */
+.picker { text-align: center; margin-top: 24px; }
+.picker h2 { font-size: 16px; font-weight: 600; color: #E8E8EC; margin-bottom: 16px; }
+.picker-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.picker-btn { padding: 14px 28px; border-radius: 16px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
+.picker-btn-1 { background: linear-gradient(135deg, #00FFC8 0%, #00D4AA 100%); color: #0A0A0F; }
+.picker-btn-2 { background: linear-gradient(135deg, #D4A555 0%, #C49444 100%); color: #1A1410; }
+.picker-btn-3 { background: #4F46E5; color: #fff; }
+.picker-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+</style>
+</head>
+<body>
+<h1>PCX7100 Control</h1>
+<p class="subtitle">Escolha a direção visual do app — cada uma tem personalidade própria</p>
+
+<!-- DESIGN 1: DARK NEON -->
+<div class="phone-frame design-1">
+  <div class="design-label">
+    <span class="num">①</span>
+    <span class="mood">Dark Neon — Tech futurista</span>
+  </div>
+  <div class="screen">
+    <div class="top-bar">
+      <span class="device-name">PCX7100</span>
+      <span class="device-status">Conectado</span>
+      <div class="battery">
+        <span>78%</span>
+        <div class="battery-icon"><div class="battery-fill"></div></div>
+      </div>
+    </div>
+    <div class="volume-section">
+      <div class="section-title">Volume</div>
+      <div class="volume-slider-wrap">
+        <div class="volume-track"><div class="volume-fill"></div></div>
+        <div class="volume-thumb"></div>
+      </div>
+      <div class="volume-labels"><span>Mudo</span><span>Máx</span></div>
+    </div>
+    <div class="media-section">
+      <div class="media-artwork">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9 8v8M15 8v8"/></svg>
+      </div>
+      <div class="media-info">
+        <div class="media-title">Sintetizador Noturno</div>
+        <div class="media-artist">Cyberwave • 3:42</div>
+      </div>
+      <div class="media-controls">
+        <button class="media-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M19 5v14"/><path d="M5 5v14"/></svg></button>
+        <button class="media-btn play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7-11-7z"/></svg></button>
+        <button class="media-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 19h14"/><path d="M5 5h14"/><path d="M10 5v14"/></svg></button>
+      </div>
+    </div>
+    <div class="eq-section">
+      <div class="section-title">Equalizador</div>
+      <div class="eq-bars">
+        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+      </div>
+      <div class="eq-labels"><span>60Hz</span><span>230Hz</span><span>910Hz</span><span>3.6kHz</span><span>14kHz</span></div>
+    </div>
+    <div class="preset-row">
+      <button class="preset-btn active">Flat</button>
+      <button class="preset-btn">Bass</button>
+      <button class="preset-btn">Pop</button>
+      <button class="preset-btn">Rock</button>
+      <button class="preset-btn">Jazz</button>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Control</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 3v12M3 12h18"/></svg><span>EQ</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Mídia</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span>Luzes</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg><span>Config</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- DESIGN 2: WARM AUDIO -->
+<div class="phone-frame design-2">
+  <div class="design-label">
+    <span class="num">②</span>
+    <span class="mood">Warm Audio — Equipamento vintage</span>
+  </div>
+  <div class="screen">
+    <div class="top-bar">
+      <span class="device-name">PCX7100</span>
+      <span class="device-status">Conectado</span>
+      <div class="battery">
+        <span>78%</span>
+        <div class="battery-icon"><div class="battery-fill"></div></div>
+      </div>
+    </div>
+    <div class="volume-section">
+      <div class="section-title">Volume</div>
+      <div class="volume-slider-wrap">
+        <div class="volume-track"><div class="volume-fill"></div></div>
+        <div class="volume-thumb"></div>
+      </div>
+      <div class="volume-labels"><span>Mudo</span><span>Máx</span></div>
+    </div>
+    <div class="media-section">
+      <div class="media-artwork">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9 8v8M15 8v8"/></svg>
+      </div>
+      <div class="media-info">
+        <div class="media-title">Sintetizador Noturno</div>
+        <div class="media-artist">Cyberwave • 3:42</div>
+      </div>
+      <div class="media-controls">
+        <button class="media-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M19 5v14"/><path d="M5 5v14"/></svg></button>
+        <button class="media-btn play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7-11-7z"/></svg></button>
+        <button class="media-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 19h14"/><path d="M5 5h14"/><path d="M10 5v14"/></svg></button>
+      </div>
+    </div>
+    <div class="eq-section">
+      <div class="section-title">Equalizador</div>
+      <div class="eq-bars">
+        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+      </div>
+      <div class="eq-labels"><span>60Hz</span><span>230Hz</span><span>910Hz</span><span>3.6kHz</span><span>14kHz</span></div>
+    </div>
+    <div class="preset-row">
+      <button class="preset-btn active">Flat</button>
+      <button class="preset-btn">Bass</button>
+      <button class="preset-btn">Pop</button>
+      <button class="preset-btn">Rock</button>
+      <button class="preset-btn">Jazz</button>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Control</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 3v12M3 12h18"/></svg><span>EQ</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Mídia</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span>Luzes</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg><span>Config</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- DESIGN 3: MINIMAL PRO -->
+<div class="phone-frame design-3">
+  <div class="design-label">
+    <span class="num">③</span>
+    <span class="mood">Minimal Pro — Estúdio limpo</span>
+  </div>
+  <div class="screen">
+    <div class="top-bar">
+      <span class="device-name">PCX7100</span>
+      <span class="device-status">Conectado</span>
+      <div class="battery">
+        <span>78%</span>
+        <div class="battery-icon"><div class="battery-fill"></div></div>
+      </div>
+    </div>
+    <div class="volume-section">
+      <div class="section-title">Volume</div>
+      <div class="volume-slider-wrap">
+        <div class="volume-track"><div class="volume-fill"></div></div>
+        <div class="volume-thumb"></div>
+      </div>
+      <div class="volume-labels"><span>Mudo</span><span>Máx</span></div>
+    </div>
+    <div class="media-section">
+      <div class="media-artwork">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9 8v8M15 8v8"/></svg>
+      </div>
+      <div class="media-info">
+        <div class="media-title">Sintetizador Noturno</div>
+        <div class="media-artist">Cyberwave • 3:42</div>
+      </div>
+      <div class="media-controls">
+        <button class="media-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M19 5v14"/><path d="M5 5v14"/></svg></button>
+        <button class="media-btn play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7-11-7z"/></svg></button>
+        <button class="media-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 19h14"/><path d="M5 5h14"/><path d="M10 5v14"/></svg></button>
+      </div>
+    </div>
+    <div class="eq-section">
+      <div class="section-title">Equalizador</div>
+      <div class="eq-bars">
+        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+      </div>
+      <div class="eq-labels"><span>60Hz</span><span>230Hz</span><span>910Hz</span><span>3.6kHz</span><span>14kHz</span></div>
+    </div>
+    <div class="preset-row">
+      <button class="preset-btn active">Flat</button>
+      <button class="preset-btn">Bass</button>
+      <button class="preset-btn">Pop</button>
+      <button class="preset-btn">Rock</button>
+      <button class="preset-btn">Jazz</button>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Control</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 3v12M3 12h18"/></svg><span>EQ</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Mídia</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span>Luzes</span></div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg><span>Config</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="picker">
+  <h2>Qual direção você prefere?</h2>
+  <div class="picker-buttons">
+    <button class="picker-btn picker-btn-1" onclick="pick(1)">① Dark Neon</button>
+    <button class="picker-btn picker-btn-2" onclick="pick(2)">② Warm Audio</button>
+    <button class="picker-btn picker-btn-3" onclick="pick(3)">③ Minimal Pro</button>
+  </div>
+</div>
+
+<script>
+function pick(n) {
+  const urls = {
+    1: 'zyvo://pick/1',
+    2: 'zyvo://pick/2',
+    3: 'zyvo://pick/3'
+  };
+  // Tenta abrir via intent customizado; se não, copia para clipboard
+  const link = document.createElement('a');
+  link.href = urls[n];
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  // Feedback visual
+  document.querySelectorAll('.picker-btn').forEach(b => b.style.opacity = '0.5');
+  event.target.style.opacity = '1';
+  event.target.textContent = '✓ Escolhido: ' + event.target.textContent;
+  
+  // Copia pro clipboard também
+  navigator.clipboard.writeText(n.toString()).then(() => {
+    console.log('Copiado: ' + n);
+  });
+}
+</script>
+</body>
+</html>
