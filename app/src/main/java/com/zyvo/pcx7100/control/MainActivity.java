@@ -1,6 +1,7 @@
 package com.zyvo.pcx7100.control;
 
 import android.Manifest;
+import android.animation.ValueAnimator;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -25,10 +27,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.toolbar.MaterialToolbar;
+
+import com.zyvo.pcx7100.control.bluetooth.BluetoothConnectionService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,8 +145,8 @@ public class MainActivity extends AppCompatActivity {
                 showEqBottomSheet();
                 return true;
             } else if (id == R.id.nav_media) {
-                findViewById(R.id.scrollView).post(() ->
-                    findViewById(R.id.scrollView).smoothScrollTo(0, mediaArtwork.getTop()));
+                NestedScrollView sv = findViewById(R.id.scrollView);
+                sv.post(() -> sv.smoothScrollTo(0, mediaArtwork.getTop()));
                 return true;
             } else if (id == R.id.nav_lights) {
                 showLightsBottomSheet();
@@ -378,7 +383,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void animateBarHeight(View bar, int targetHeight) {
-        bar.animate().setDuration(300).height(targetHeight).start();
+        animateBarHeight(bar, targetHeight, 300);
+    }
+
+    private void animateBarHeight(View bar, int targetHeight, int durationMs) {
+        ViewGroup.LayoutParams lp = bar.getLayoutParams();
+        ValueAnimator anim = ValueAnimator.ofInt(lp.height, targetHeight);
+        anim.setDuration(durationMs);
+        anim.addUpdateListener(a -> {
+            lp.height = (int) a.getAnimatedValue();
+            bar.setLayoutParams(lp);
+        });
+        anim.start();
     }
 
     private void startEqAnimation() {
@@ -391,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
                         int baseHeight = (int) (presetBands[presets.indexOf(currentPreset)][i] * 0.8f);
                         int variation = (int) (Math.random() * 20) - 10;
                         int newHeight = Math.max(10, Math.min(80, baseHeight + variation));
-                        bar.animate().setDuration(150).height(newHeight).start();
+                        animateBarHeight(bar, newHeight, 150);
                     }
                 }
                 uiHandler.postDelayed(this, 200);
