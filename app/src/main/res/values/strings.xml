@@ -1,47 +1,56 @@
 <resources>
     <string name="app_name">PCX7100 Control</string>
     <string name="device_name">PCX7100</string>
-    <string name="status_connected">Conectado</string>
-    <string name="status_disconnected">Desconectado</string>
+
+    <!-- Connection -->
+    <string name="connection_label">Conexão</string>
+    <string name="status_connected">Caixa conectada</string>
+    <string name="status_disconnected">Caixa não conectada</string>
     <string name="status_connecting">Conectando…</string>
-    <string name="status_scanning">Procurando…</string>
-    <string name="volume_label">Volume</string>
-    <string name="volume_mute">Mudo</string>
-    <string name="volume_max">Máx</string>
-    <string name="eq_title">Equalizador</string>
-    <string name="eq_preset_flat">Flat</string>
-    <string name="eq_preset_bass">Bass</string>
-    <string name="eq_preset_pop">Pop</string>
-    <string name="eq_preset_rock">Rock</string>
-    <string name="eq_preset_jazz">Jazz</string>
-    <string name="media_play">Play</string>
-    <string name="media_pause">Pause</string>
-    <string name="media_prev">Anterior</string>
-    <string name="media_next">Próximo</string>
-    <string name="media_title">Capa do álbum</string>
-    <string name="nav_control">Control</string>
-    <string name="nav_eq">EQ</string>
-    <string name="nav_media">Mídia</string>
-    <string name="nav_lights">Luzes</string>
-    <string name="nav_settings">Config</string>
-    <string name="battery_level">Bateria</string>
-    <string name="no_device_found">Nenhuma PCX7100 encontrada</string>
-    <string name="tap_to_scan">Toque para escanear</string>
+    <string name="connect">Conectar</string>
+    <string name="connect_hint">Toque em Conectar para abrir o Bluetooth</string>
     <string name="bluetooth_off">Bluetooth desligado</string>
-    <string name="enable_bluetooth">Ativar Bluetooth</string>
-    <string name="permission_location_needed">Precisa de permissão de localização para escanear Bluetooth</string>
-    <string name="lights_title">Luzes LED</string>
-    <string name="lights_on">Ligado</string>
-    <string name="lights_off">Desligado</string>
-    <string name="lights_mode">Modo</string>
-    <string name="lights_brightness">Brilho</string>
-    <string name="lights_color">Cor</string>
+
+    <!-- Volume -->
+    <string name="volume_label">VOLUME</string>
+    <string name="volume_mute">Mudo</string>
+    <string name="volume_max">Volume máximo</string>
+
+    <!-- Media -->
+    <string name="media_play">Reproduzir</string>
+    <string name="media_pause">Pausar</string>
+    <string name="media_prev">Faixa anterior</string>
+    <string name="media_next">Próxima faixa</string>
+
+    <!-- Equalizer -->
+    <string name="eq_title">EQUALIZADOR</string>
+    <string name="eq_preset_flat">Flat</string>
+    <string name="eq_preset_classic">Classic</string>
+    <string name="eq_preset_rock">Rock</string>
+    <string name="eq_preset_pop">Pop</string>
+    <string name="eq_preset_jazz">Jazz</string>
+    <string name="eq_unavailable">Equalizador não disponível neste aparelho</string>
+
+    <!-- Effects -->
+    <string name="effects_title">EFEITOS</string>
+    <string name="ex_bass">Ex Bass</string>
+    <string name="sound_3d">Som 3D</string>
+
+    <!-- Device buttons guide -->
+    <string name="device_buttons">BOTÕES DA CAIXA</string>
+    <string name="device_buttons_note">O EQ, as luzes e o Ex Bass originais são botões físicos na caixa. Veja como usar cada um:</string>
+    <string name="guide_eq_title">Botão EQ</string>
+    <string name="guide_eq_desc">Alterna entre FLAT, CLASSIC, ROCK, POP e JAZZ direto na caixa.</string>
+    <string name="guide_lights_title">Botão LIGHT (Flash Lights)</string>
+    <string name="guide_lights_desc">5 modos: L1 azul fixo, L2 vermelho, L3 verde, L4 pisca com a música, L5 pulso suave.</string>
+    <string name="guide_bass_title">Botão EX BASS</string>
+    <string name="guide_bass_desc">Reforça os graves na própria caixa. O app tem um bass boost equivalente em Efeitos.</string>
+    <string name="guide_function_title">Botão FUNCTION</string>
+    <string name="guide_function_desc">Troca entre Bluetooth, USB, AUX, FM e microfone.</string>
+
+    <!-- Misc -->
+    <string name="battery_level">Bateria</string>
     <string name="settings_title">Configurações</string>
-    <string name="settings_auto_connect">Reconexão automática</string>
-    <string name="settings_keep_screen_on">Manter tela ligada</string>
     <string name="settings_about">Sobre</string>
-    <string name="settings_version">Versão 1.0</string>
-    <string name="firmware_title">Firmware</string>
-    <string name="firmware_check">Verificar atualização</string>
-    <string name="power_off">Desligar caixa</string>
+    <string name="settings_version">Versão 2.0</string>
 </resources>
