@@ -356,6 +356,7 @@ public class BluetoothConnectionService extends Service {
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            UUID uuid = characteristic.getUuid();
             if (uuid.equals(VOLUME_CHAR_UUID)) {
                 if (volumeCallback != null) volumeCallback.onVolumeSet(status == BluetoothGatt.GATT_SUCCESS);
             }
