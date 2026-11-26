@@ -8,3 +8,15 @@
 /captures
 .externalNativeBuild
 .cxx
+# Android build / signing
+*.apk
+*.ap_
+*.aab
+*.keystore
+*.jks
+*.p12
+*.pem
+key.properties
+*.log
+# Proguard / obfuscation output
+proguard*.txt
